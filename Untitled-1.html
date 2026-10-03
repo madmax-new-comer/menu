@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فيردنت · قائمة مطعم أنيقة | Verdant · Elegant Menu</title>
+  <meta name="theme-color" content="#14311f">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #1a3a2a;
+      --nav:       #14311f;
+      --modal-bg:  #1f4630;
+      --thumb-bg:  #2b553a;
+      --border:    #35704a;
+      --border-2:  #4b8560;
+      --green:     #74b383;
+      --muted:     #b8dec6;
+      --text:      #eaf5ed;
+      --amber:     #d9a441;
+      --amber-lt:  #e8c47a;
+      --amber-pl:  #f0d89a;
+      --nav-h:     60px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      padding-top: calc(var(--nav-h) + 1rem);
+      overflow-x: hidden;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body.lang-en {
+      font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    body.lang-en .nav-brand,
+    body.lang-en .menu-header h1,
+    body.lang-en .category h2,
+    body.lang-en .item-name,
+    body.lang-en .modal-title h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    body.lang-en .menu-header h1 { letter-spacing: 2px; }
+    body.lang-en .category h2 { letter-spacing: 3px; }
+
+    img { max-width: 100%; display: block; }
+
+    @keyframes fadeUp      { from { opacity:0; transform:translateY(24px);} to {opacity:1; transform:translateY(0);} }
+    @keyframes fadeInRight { from { opacity:0; transform:translateX(16px);}  to {opacity:1; transform:translateX(0);} }
+    @keyframes fadeInLeft  { from { opacity:0; transform:translateX(-16px);} to {opacity:1; transform:translateX(0);} }
+    @keyframes slideDown   { from { transform:translateY(-100%);} to {transform:translateY(0);} }
+    @keyframes pulse       { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:.6; transform:scale(.85);} }
+    @keyframes shimmer     { 0% { background-position:-200% 0;} 100% { background-position:200% 0;} }
+    @keyframes amberPulse  { 0%,100% { box-shadow:0 0 0 0 rgba(217,164,65,.4);} 50% { box-shadow:0 0 0 6px rgba(217,164,65,0);} }
+    @keyframes modalIn     { from { opacity:0; transform:translateY(30px) scale(.96);} to {opacity:1; transform:translateY(0) scale(1);} }
+    @keyframes backdropIn  { from { opacity:0;} to {opacity:1;} }
+    @keyframes imgFadeIn   { from { opacity:0; transform:scale(1.04);} to {opacity:1; transform:scale(1);} }
+    @keyframes flicker     {
+      0%, 100% { opacity: .08; transform: translateY(0) scale(1); }
+      50%      { opacity: .14; transform: translateY(-3px) scale(1.03); }
+    }
+    @keyframes bubble     {
+      0%, 100% { opacity: .08; transform: translateY(0); }
+      50%      { opacity: .16; transform: translateY(-6px); }
+    }
+    @keyframes drift {
+      0%, 100% { opacity: .06; transform: translateX(0); }
+      50%      { opacity: .12; transform: translateX(8px); }
+    }
+
+    /* ============ NAVBAR ============ */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background-color: var(--nav);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 clamp(1rem, 3vw, 2.5rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+      animation: slideDown .6s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: clamp(.8rem, 2vw, 2rem);
+      flex-wrap: wrap;
+    }
+
+    .nav-brand {
+      font-family: 'Amiri', serif;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+      font-weight: 700;
+      color: #d2f0dc;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      animation: fadeInLeft .7s ease .2s both;
+    }
+
+    .nav-brand::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite, amberPulse 3s ease-in-out infinite;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: clamp(.8rem, 2vw, 2rem);
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .nav-links li { animation: fadeInRight .5s ease both; }
+    .nav-links li:nth-child(1) { animation-delay:.15s; }
+    .nav-links li:nth-child(2) { animation-delay:.25s; }
+    .nav-links li:nth-child(3) { animation-delay:.35s; }
+    .nav-links li:nth-child(4) { animation-delay:.45s; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(.75rem, 1.3vw, .9rem);
+      font-weight: 500;
+      padding: .25rem 0;
+      border-bottom: 1px solid transparent;
+      cursor: pointer;
+      position: relative;
+      transition: color .2s ease;
+    }
+    body.lang-en .nav-links a {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-size: clamp(.7rem, 1.2vw, .82rem);
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      right: 0; bottom: -2px;
+      width: 0; height: 1px;
+      background: var(--amber);
+      transition: width .25s ease;
+    }
+    body.lang-en .nav-links a::after { right: auto; left: 0; }
+    .nav-links a:hover { color: var(--amber-lt); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ============ LANGUAGE TOGGLE ============ */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(217,164,65,.1);
+      border: 1px solid rgba(217,164,65,.4);
+      color: var(--amber-lt);
+      padding: .4rem .85rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(.7rem, 1.2vw, .8rem);
+      font-weight: 600;
+      letter-spacing: .5px;
+      transition: all .25s ease;
+      flex-shrink: 0;
+      animation: fadeInRight .6s ease .55s both;
+      white-space: nowrap;
+    }
+    .lang-toggle:hover {
+      background: var(--amber);
+      color: var(--nav);
+      border-color: var(--amber);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(217,164,65,.35);
+    }
+    .lang-toggle .globe {
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform .4s ease;
+    }
+    .lang-toggle:hover .globe { transform: rotate(180deg); }
+    .lang-toggle .lang-label {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+    }
+    body.lang-en .lang-toggle .lang-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+    }
+
+    /* ============ MENU CONTAINER ============ */
+    .menu {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 4vw, 3rem);
+    }
+
+    .menu-header {
+      margin-bottom: clamp(2rem, 5vw, 3.5rem);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: clamp(1.25rem, 3vw, 2rem);
+      text-align: center;
+      animation: fadeUp .7s ease .3s both;
+    }
+
+    .menu-header h1 {
+      font-family: 'Amiri', serif;
+      font-size: clamp(2.6rem, 9vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: .5rem;
+      line-height: 1.1;
+      background: linear-gradient(90deg, #d2f0dc 0%, var(--amber-lt) 50%, #d2f0dc 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+
+    .menu-header p {
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(.75rem, 1.6vw, .9rem);
+      color: #9bc4aa;
+      font-weight: 400;
+      padding: 0 .5rem;
+    }
+    body.lang-en .menu-header p {
+      font-family: 'Jost', sans-serif;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      font-size: clamp(.7rem, 1.4vw, .82rem);
+    }
+    .menu-header p span { color: var(--amber); font-weight: 600; }
+
+    /* ============================================================
+       CATEGORY — WITH THEMED SEMI-TRANSPARENT BACKGROUND
+       ============================================================ */
+    .category {
+      position: relative;
+      margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+      scroll-margin-top: calc(var(--nav-h) + 20px);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+
+      /* card-like appearance for the pattern */
+      border-radius: 22px;
+      padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 1.75rem);
+      border: 1px solid rgba(53,112,74,.5);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .category.visible { opacity: 1; transform: translateY(0); }
+
+    /* The pattern layer behind the content */
+    .category::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .55;
+      pointer-events: none;
+      transition: opacity .6s ease;
+    }
+
+    /* --- GRILLED: flame-inspired radial glows --- */
+    #grilled::before {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(217,164,65,.28) 0%, transparent 30%),
+        radial-gradient(circle at 80% 75%, rgba(217,100,30,.22) 0%, transparent 28%),
+        radial-gradient(circle at 45% 55%, rgba(217,164,65,.16) 0%, transparent 35%),
+        radial-gradient(circle at 90% 15%, rgba(255,90,20,.14) 0%, transparent 25%),
+        radial-gradient(circle at 10% 85%, rgba(255,140,50,.16) 0%, transparent 25%);
+      background-color: rgba(60,30,10,.15);
+      animation: flicker 6s ease-in-out infinite;
+    }
+    #grilled::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent 0,
+          transparent 40px,
+          rgba(217,164,65,.04) 40px,
+          rgba(217,164,65,.04) 42px
+        );
+      border-radius: 22px;
+    }
+
+    /* --- FRIED: oil bubble / golden dots --- */
+    #fried::before {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(240,216,154,.22) 0%, transparent 20%),
+        radial-gradient(circle at 70% 20%, rgba(217,164,65,.18) 0%, transparent 22%),
+        radial-gradient(circle at 35% 75%, rgba(240,216,154,.20) 0%, transparent 18%),
+        radial-gradient(circle at 85% 65%, rgba(217,164,65,.16) 0%, transparent 24%),
+        radial-gradient(circle at 55% 45%, rgba(255,220,120,.12) 0%, transparent 26%);
+      background-color: rgba(70,50,20,.14);
+      animation: bubble 7s ease-in-out infinite;
+    }
+    #fried::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(217,164,65,.10) 1.5px, transparent 2px),
+        radial-gradient(circle, rgba(240,216,154,.08) 1px, transparent 1.6px);
+      background-size: 50px 50px, 70px 70px;
+      background-position: 0 0, 25px 25px;
+      border-radius: 22px;
+    }
+
+    /* --- DRINKS: water droplets / bubbles --- */
+    #drinks::before {
+      background:
+        radial-gradient(circle at 25% 25%, rgba(116,179,131,.20) 0%, transparent 24%),
+        radial-gradient(circle at 75% 60%, rgba(180,220,200,.16) 0%, transparent 22%),
+        radial-gradient(circle at 50% 80%, rgba(116,179,131,.14) 0%, transparent 20%),
+        radial-gradient(circle at 85% 20%, rgba(200,230,215,.12) 0%, transparent 26%);
+      background-color: rgba(20,50,40,.14);
+      animation: drift 8s ease-in-out infinite;
+    }
+    #drinks::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(180,220,200,.08) 2px, transparent 3px),
+        radial-gradient(circle, rgba(116,179,131,.07) 1.5px, transparent 2.5px),
+        radial-gradient(circle, rgba(200,230,215,.06) 1px, transparent 2px);
+      background-size: 60px 60px, 90px 90px, 40px 40px;
+      background-position: 0 0, 30px 40px, 15px 20px;
+      border-radius: 22px;
+    }
+
+    /* --- DESSERTS: sugar sprinkles / dots --- */
+    #desserts::before {
+      background:
+        radial-gradient(circle at 30% 25%, rgba(240,216,154,.18) 0%, transparent 22%),
+        radial-gradient(circle at 70% 70%, rgba(217,164,65,.16) 0%, transparent 24%),
+        radial-gradient(circle at 15% 75%, rgba(200,160,120,.14) 0%, transparent 20%),
+        radial-gradient(circle at 88% 30%, rgba(240,200,140,.12) 0%, transparent 22%);
+      background-color: rgba(55,40,25,.14);
+      animation: bubble 9s ease-in-out infinite;
+    }
+    #desserts::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(217,164,65,.10) 1.5px, transparent 2px),
+        radial-gradient(circle, rgba(240,216,154,.08) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(180,140,90,.06) 2px, transparent 3px);
+      background-size: 35px 35px, 55px 55px, 80px 80px;
+      background-position: 0 0, 20px 25px, 10px 40px;
+      border-radius: 22px;
+    }
+
+    /* ============ CATEGORY HEADING ============ */
+    .category h2 {
+      font-family: 'Amiri', serif;
+      font-size: clamp(1.7rem, 4.5vw, 2.3rem);
+      font-weight: 700;
+      color: #d2f0dc;
+      margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .75rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      /* slightly translucent so background pattern shows through */
+      text-shadow: 0 2px 12px rgba(0,0,0,.4);
+    }
+    .category h2::after {
+      content: '';
+      position: absolute;
+      right: 0; bottom: -1px;
+      height: 1px; width: 0;
+      background: var(--amber);
+      transition: width .8s ease .2s;
+    }
+    body.lang-en .category h2::after { right: auto; left: 0; }
+    .category.visible h2::after { width: 60px; }
+
+    .category h2::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+      margin-left: .9rem;
+      flex-shrink: 0;
+      opacity: .85;
+    }
+    body.lang-en .category h2::before {
+      margin-left: 0;
+      margin-right: .9rem;
+    }
+
+    /* ============ ITEM GRID ============ */
+    .items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+      gap: clamp(1rem, 2.5vw, 1.6rem) clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    /* ============ MENU ITEM ============ */
+    .item {
+      display: flex;
+      align-items: center;
+      gap: clamp(.75rem, 2vw, 1rem);
+      padding: clamp(.6rem, 1.5vw, .75rem) .6rem;
+      border-bottom: 1px dashed rgba(53,112,74,.55);
+      border-radius: 10px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .5s ease, transform .5s ease,
+                  background-color .25s ease,
+                  padding-right .25s ease,
+                  padding-left .25s ease,
+                  border-color .25s ease;
+      cursor: pointer;
+      outline: none;
+      min-width: 0;
+      background: rgba(20,49,31,.35);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    .item:focus-visible {
+      background-color: rgba(217,164,65,.12);
+      box-shadow: 0 0 0 2px var(--amber);
+    }
+    .category.visible .item { opacity: 1; transform: translateY(0); }
+    .category.visible .item:nth-child(1) { transition-delay:.10s; }
+    .category.visible .item:nth-child(2) { transition-delay:.18s; }
+    .category.visible .item:nth-child(3) { transition-delay:.26s; }
+    .category.visible .item:nth-child(4) { transition-delay:.34s; }
+    .category.visible .item:nth-child(5) { transition-delay:.42s; }
+
+    .item:last-child { border-bottom: none; }
+
+    .item:hover {
+      background-color: rgba(217,164,65,.10);
+      border-bottom-color: var(--amber);
+    }
+    body:not(.lang-en) .item:hover { padding-right: .9rem; }
+    body.lang-en .item:hover { padding-left: .9rem; }
+
+    /* ============ THUMBNAIL ============ */
+    .item-thumb {
+      width: clamp(60px, 11vw, 76px);
+      height: clamp(60px, 11vw, 76px);
+      border-radius: 12px;
+      background: var(--thumb-bg);
+      border: 1px solid var(--border-2);
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,.3);
+      transition: border-color .25s ease, transform .3s ease, box-shadow .3s ease;
+      position: relative;
+    }
+    .item-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+      opacity: 0;
+      animation: imgFadeIn .6s ease forwards;
+    }
+    .item:hover .item-thumb {
+      border-color: var(--amber);
+      transform: scale(1.05) rotate(1deg);
+      box-shadow: 0 8px 20px rgba(217,164,65,.35);
+    }
+    .item:hover .item-thumb img { transform: scale(1.12); }
+
+    /* ============ ITEM TEXT ============ */
+    .item-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex: 1;
+      gap: clamp(.5rem, 2vw, 1rem);
+      min-width: 0;
+    }
+
+    .item-name {
+      font-family: 'Amiri', serif;
+      font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+      font-weight: 700;
+      color: #eaf5ed;
+      line-height: 1.3;
+      transition: color .2s ease, transform .2s ease;
+      display: inline-block;
+      min-width: 0;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      text-shadow: 0 1px 8px rgba(0,0,0,.4);
+    }
+    body.lang-en .item-name {
+      font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+    }
+
+    .item-price {
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(1rem, 2.2vw, 1.15rem);
+      font-weight: 700;
+      color: var(--amber);
+      white-space: nowrap;
+      transition: color .2s ease, transform .2s ease;
+      flex-shrink: 0;
+      text-shadow: 0 1px 6px rgba(0,0,0,.4);
+    }
+    body.lang-en .item-price {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+    }
+
+    .item:hover .item-name { color: var(--amber-lt); }
+    .item:hover .item-price { color: var(--amber-pl); }
+    body:not(.lang-en) .item:hover .item-name { transform: translateX(-2px); }
+    body:not(.lang-en) .item:hover .item-price { transform: translateX(2px); }
+    body.lang-en .item:hover .item-name { transform: translateX(2px); }
+    body.lang-en .item:hover .item-price { transform: translateX(-2px); }
+
+    /* ============ FOOTER ============ */
+    .footer {
+      margin-top: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(.7rem, 1.5vw, .8rem);
+      color: #5f9473;
+      border-top: 1px solid #2a5137;
+      padding-top: clamp(1.25rem, 3vw, 2rem);
+      animation: fadeUp .7s ease .5s both;
+      font-weight: 400;
+    }
+    body.lang-en .footer {
+      font-family: 'Jost', sans-serif;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+    .footer span { color: var(--amber); font-weight: 600; }
+
+    /* ============ MODAL ============ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,20,13,.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 3vw, 1.5rem);
+      animation: backdropIn .3s ease both;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--modal-bg);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      max-width: 520px;
+      width: 100%;
+      max-height: calc(100vh - 2rem);
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(217,164,65,.12) inset;
+      animation: modalIn .4s cubic-bezier(.22,1,.36,1) both;
+      color: var(--text);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-hero {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      max-height: 280px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      background: #0e2417;
+    }
+    .modal-hero img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+    .modal-hero img.loaded { opacity: 1; }
+
+    .modal-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, #0e2417 30%, #163a25 50%, #0e2417 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+      z-index: 0;
+    }
+    .modal-hero img { position: relative; z-index: 1; }
+
+    .modal-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(20,49,31,.5) 0%,
+        rgba(20,49,31,0) 35%,
+        rgba(20,49,31,0) 65%,
+        rgba(31,70,48,.75) 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: .8rem;
+      left: .9rem;
+      background: rgba(20,49,31,.7);
+      border: 1px solid rgba(217,164,65,.35);
+      color: var(--amber-lt);
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+      line-height: 1;
+      cursor: pointer;
+      padding: .35rem .7rem;
+      border-radius: 10px;
+      transition: color .2s ease, background-color .2s ease, transform .2s ease;
+      font-family: inherit;
+      z-index: 3;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    body.lang-en .modal-close { left: auto; right: .9rem; }
+    .modal-close:hover {
+      color: var(--bg);
+      background-color: var(--amber);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: clamp(1.5rem, 4vw, 2.2rem) clamp(1.4rem, 3.5vw, 2rem) clamp(1.75rem, 4vw, 2.5rem);
+      text-align: center;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-title h3 {
+      font-family: 'Amiri', serif;
+      font-size: clamp(1.6rem, 5vw, 2.1rem);
+      font-weight: 700;
+      color: #e6f7ec;
+      line-height: 1.3;
+      margin-bottom: .5rem;
+    }
+    body.lang-en .modal-title h3 { font-size: clamp(1.6rem, 4.5vw, 2rem); }
+
+    .modal-price {
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(1.1rem, 3.2vw, 1.35rem);
+      color: var(--amber);
+      font-weight: 700;
+      display: inline-block;
+      padding: .3rem 1.1rem;
+      border: 1px solid rgba(217,164,65,.4);
+      border-radius: 30px;
+      background: rgba(217,164,65,.08);
+      letter-spacing: .5px;
+    }
+    body.lang-en .modal-price {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+    }
+
+    .modal-desc {
+      margin-top: 1.4rem;
+      font-family: 'Cairo', sans-serif;
+      font-size: clamp(.95rem, 2.4vw, 1.05rem);
+      color: #cfe9d8;
+      line-height: 1.9;
+      font-weight: 400;
+      padding: 1.1rem 1.25rem;
+      background: rgba(20,49,31,.55);
+      border-top: 2px solid var(--amber);
+      border-radius: 12px;
+      position: relative;
+    }
+    body.lang-en .modal-desc {
+      font-family: 'Jost', sans-serif;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    .modal-desc::before {
+      content: '';
+      position: absolute;
+      top: -11px;
+      right: 1.5rem;
+      width: 18px;
+      height: 18px;
+      background: var(--amber);
+      transform: rotate(45deg);
+      border-radius: 3px;
+    }
+    body.lang-en .modal-desc::before { right: auto; left: 1.5rem; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 900px) {
+      .items { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      :root { --nav-h: auto; }
+      .navbar {
+        padding: .75rem 1rem;
+        flex-direction: column;
+        height: auto;
+        gap: .6rem;
+      }
+      .nav-left {
+        flex-direction: column;
+        gap: .6rem;
+        width: 100%;
+      }
+      .nav-brand { font-size: 1.5rem; }
+      .nav-links {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+      }
+      .nav-links a { font-size: .8rem; }
+      .lang-toggle { font-size: .75rem; padding: .35rem .75rem; }
+      body { padding-top: 10.5rem; }
+
+      .category { border-radius: 18px; padding: 1.1rem .9rem; }
+      .category::after { border-radius: 18px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding-top: 11rem; }
+      .menu-header h1 { font-size: 2.4rem; }
+      .menu-header p { font-size: .72rem; }
+      .items { grid-template-columns: 1fr; gap: .75rem; }
+      .item { padding: .55rem .5rem; gap: .7rem; }
+      .item-thumb { width: 62px; height: 62px; border-radius: 10px; }
+      .item-name { font-size: 1.15rem; }
+      .item-price { font-size: 1rem; }
+      .modal { max-height: calc(100vh - 1.25rem); border-radius: 16px; }
+      .modal-hero { aspect-ratio: 4 / 3; max-height: 220px; }
+      .modal-body { padding: 1.4rem 1.15rem 1.75rem; }
+      .modal-desc { font-size: .92rem; padding: .95rem 1rem; }
+      .category { border-radius: 16px; padding: 1rem .75rem; }
+    }
+
+    @media (max-width: 360px) {
+      .nav-links { gap: .7rem; }
+      .nav-links a { font-size: .7rem; }
+      .menu-header h1 { font-size: 2rem; }
+      .item-name { font-size: 1.05rem; }
+      .item-price { font-size: .95rem; }
+      .item-thumb { width: 56px; height: 56px; }
+      .lang-toggle { font-size: .7rem; padding: .3rem .65rem; }
+    }
+
+    @media (min-width: 1400px) {
+      .menu { max-width: 1300px; }
+      .items { gap: 1.8rem 3rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .category, .item { opacity: 1 !important; transform: none !important; }
+      .category::before { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="nav-brand" data-i18n="brand">فيردنت</div>
+      <ul class="nav-links">
+        <li><a href="#grilled"  data-i18n="nav_grilled">مشويات</a></li>
+        <li><a href="#fried"    data-i18n="nav_fried">مقليات</a></li>
+        <li><a href="#drinks"   data-i18n="nav_drinks">مشروبات</a></li>
+        <li><a href="#desserts" data-i18n="nav_desserts">حلويات</a></li>
+      </ul>
+    </div>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">
+      <span class="globe">🌐</span>
+      <span class="lang-label" data-i18n="lang_label">EN</span>
+    </button>
+  </nav>
+
+  <div class="menu">
+    <header class="menu-header">
+      <h1 data-i18n="menu_title">قائمة الطعام</h1>
+      <p data-i18n="menu_sub">عشرون طبقاً · <span>اضغط على أي طبق</span> لعرض تفاصيله</p>
+    </header>
+
+    <section class="category" id="grilled">
+      <h2 data-i18n="cat_grilled">مشويات</h2>
+      <div class="items">
+
+        <div class="item" tabindex="0"
+             data-name-ar="دجاج مشوي بالأعشاب" data-name-en="Herb Grilled Chicken"
+             data-price="18"
+             data-desc-ar="صدر دجاج طري يُتبّل بالأعشاب الطازجة والثوم، ثم يُشوى على الفحم حتى يكتسب نكهة دخانية غنية، ويُقدّم مع صوص المنزل الخاص."
+             data-desc-en="Tender chicken breast seasoned with fresh herbs and garlic, grilled over charcoal for a rich smoky flavor, served with our signature house sauce.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&h=400&fit=crop" alt="دجاج مشوي بالأعشاب" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_1">دجاج مشوي بالأعشاب</span>
+            <span class="item-price">18</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="ستيك ريب آي" data-name-en="Ribeye Steak"
+             data-price="29"
+             data-desc-ar="قطعة ستيك ريب آي فاخرة، مشوية على درجة الإستواء المثالية، مع زبدة الأعشاب والثوم المحمّص، تذوب في الفم."
+             data-desc-en="A premium ribeye steak grilled to perfection, topped with herb butter and roasted garlic — melting in your mouth.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=400&h=400&fit=crop" alt="ستيك ريب آي" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_2">ستيك ريب آي</span>
+            <span class="item-price">29</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="سلمون مشوي" data-name-en="Grilled Salmon"
+             data-price="24"
+             data-desc-ar="فيليه سلمون نرويجي طازج، مشوي مع الليمون والشبت وزبدة الأعشاب، يقدّم مع صوص الليمون الكريمي."
+             data-desc-en="Fresh Norwegian salmon fillet, grilled with lemon, dill and herb butter, served with a creamy lemon sauce.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=400&fit=crop" alt="سلمون مشوي" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_3">سلمون مشوي</span>
+            <span class="item-price">24</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="أسياخ خضار" data-name-en="Veggie Skewers"
+             data-price="14"
+             data-desc-ar="أسياخ من الخضار الموسمية الطازجة وجبن الحلوم، مشوية بزيت الزيتون وزعتر الزعتر، مثالية للنباتيين."
+             data-desc-en="Skewers of fresh seasonal vegetables and halloumi cheese, grilled with olive oil and za'atar — perfect for vegetarians.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=400&fit=crop" alt="أسياخ خضار" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_4">أسياخ خضار</span>
+            <span class="item-price">14</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="ريش غنم مشوية" data-name-en="Grilled Lamb Chops"
+             data-price="27"
+             data-desc-ar="ريش غنم طازجة متبّلة بالسماق والأعشاب، مشوية على الفحم، وتُقدّم مع صوص الزبادي بالنعناع."
+             data-desc-en="Fresh lamb chops seasoned with sumac and herbs, grilled over charcoal, served with a mint yogurt sauce.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=400&h=400&fit=crop" alt="ريش غنم مشوية" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_5">ريش غنم مشوية</span>
+            <span class="item-price">27</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="category" id="fried">
+      <h2 data-i18n="cat_fried">مقليات</h2>
+      <div class="items">
+
+        <div class="item" tabindex="0"
+             data-name-ar="كاليماري مقرمش" data-name-en="Crispy Calamari"
+             data-price="16"
+             data-desc-ar="حلقات الحبار الطازجة بطبقة مقرمشة ذهبية، تُقدّم مع صوص الأيولي بالليمون ورشّة بقدونس طازج."
+             data-desc-en="Fresh squid rings in a golden crispy coating, served with lemon aioli and a sprinkle of fresh parsley.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=400&fit=crop" alt="كاليماري مقرمش" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_6">كاليماري مقرمش</span>
+            <span class="item-price">16</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="دجاج باللبن الرائب" data-name-en="Buttermilk Fried Chicken"
+             data-price="19"
+             data-desc-ar="قطع دجاج مغطاة باللبن الرائب والبهارات، مقلية حتى تصبح ذهبية مقرمشة، مع صوص العسل الحار."
+             data-desc-en="Chicken pieces coated in buttermilk and spices, fried until golden and crispy, served with a spicy honey sauce.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" alt="دجاج باللبن الرائب" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_7">دجاج باللبن الرائب</span>
+            <span class="item-price">19</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="بطاطا حلوة مقلية" data-name-en="Sweet Potato Fries"
+             data-price="9"
+             data-desc-ar="أصابع البطاطا الحلوة المقلية حتى القرمشة، مع صوص التشيبوتلي والثوم المعمر."
+             data-desc-en="Sweet potato fries fried to a perfect crunch, served with chipotle sauce and chives.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=400&h=400&fit=crop" alt="بطاطا حلوة مقلية" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_8">بطاطا حلوة مقلية</span>
+            <span class="item-price">9</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="فاصولياء تمبورا" data-name-en="Tempura Green Beans"
+             data-price="11"
+             data-desc-ar="فاصولياء خضراء طازجة مغطاة بعجينة التمبورا المقرمشة، مع صوص الصويا والزنجبيل."
+             data-desc-en="Fresh green beans in a crispy tempura batter, served with a soy and ginger dipping sauce.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1625938145312-c96a9f9cbb03?w=400&h=400&fit=crop" alt="فاصولياء تمبورا" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_9">فاصولياء تمبورا</span>
+            <span class="item-price">11</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="موز مقلي" data-name-en="Fried Plantains"
+             data-price="8"
+             data-desc-ar="شرائح الموز الناضج المقلية حتى الكراميل، تُقدّم مع غموس الفاصولياء السوداء والليمون."
+             data-desc-en="Ripe plantain slices fried to caramelization, served with a black bean dip and lime.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop" alt="موز مقلي" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_10">موز مقلي</span>
+            <span class="item-price">8</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="category" id="drinks">
+      <h2 data-i18n="cat_drinks">مشروبات</h2>
+      <div class="items">
+
+        <div class="item" tabindex="0"
+             data-name-ar="مشروب الخيار والنعناع" data-name-en="Cucumber Mint Cooler"
+             data-price="7"
+             data-desc-ar="مزيج منعش من الخيار الطازج والنعناع والليمون مع الماء الفوّار، مثالي لأيام الصيف الحارة."
+             data-desc-en="A refreshing blend of fresh cucumber, mint and lemon with sparkling water — perfect for hot summer days.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&h=400&fit=crop" alt="مشروب الخيار والنعناع" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_11">مشروب الخيار والنعناع</span>
+            <span class="item-price">7</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="ماتشا لاتيه مثلج" data-name-en="Iced Matcha Latte"
+             data-price="6.5"
+             data-desc-ar="ماتشا يابانية فاخرة مخفوقة مع حليب الشوفان والڤانيليا، تُقدّم مثلجة لانتعاش يدوم."
+             data-desc-en="Premium Japanese matcha whisked with oat milk and vanilla, served over ice for lasting refreshment.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&h=400&fit=crop" alt="ماتشا لاتيه مثلج" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_12">ماتشا لاتيه مثلج</span>
+            <span class="item-price">6.5</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="ليموناضة بالحبق" data-name-en="Basil Lemonade"
+             data-price="5.5"
+             data-desc-ar="ليموناضة منعشة بالحبق الطازج والسكر الخام، تُحضّر يومياً بمكونات طبيعية."
+             data-desc-en="A refreshing lemonade with fresh basil and raw sugar, made fresh daily with natural ingredients.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1575596510825-f748919a2bf7?w=400&h=400&fit=crop" alt="ليموناضة بالحبق" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_13">ليموناضة بالحبق</span>
+            <span class="item-price">5.5</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="كولد برو تونيك" data-name-en="Cold Brew Tonic"
+             data-price="6"
+             data-desc-ar="قهوة كولد برو مخمّرة ببطء، ممزوجة بماء التونيك وقشر البرتقال، مشروب منعش بنكهة غنية."
+             data-desc-en="Slow-steeped cold brew coffee mixed with tonic water and orange zest — a refreshing drink with a rich flavor.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&h=400&fit=crop" alt="كولد برو تونيك" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_14">كولد برو تونيك</span>
+            <span class="item-price">6</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="صودا الزنجبيل والكركم" data-name-en="Ginger Turmeric Soda"
+             data-price="5"
+             data-desc-ar="صودا بروبيوتيك طبيعية بالزنجبيل والكركم والعسل، مشروب صحي ومنعش في الوقت نفسه."
+             data-desc-en="A natural probiotic soda with ginger, turmeric and honey — both healthy and refreshing.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400&h=400&fit=crop" alt="صودا الزنجبيل والكركم" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_15">صودا الزنجبيل والكركم</span>
+            <span class="item-price">5</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="category" id="desserts">
+      <h2 data-i18n="cat_desserts">حلويات</h2>
+      <div class="items">
+
+        <div class="item" tabindex="0"
+             data-name-ar="تشيز كيك الماتشا" data-name-en="Matcha Cheesecake"
+             data-price="10"
+             data-desc-ar="تشيز كيك كريمي بطبقة ماتشا فاخرة فوق قاعدة البسكويت المقرمشة، مع صوص الشوكولاتة البيضاء والتوت الطازج."
+             data-desc-en="Creamy cheesecake with a premium matcha layer on a crunchy biscuit base, with white chocolate sauce and fresh berries.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&h=400&fit=crop" alt="تشيز كيك الماتشا" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_16">تشيز كيك الماتشا</span>
+            <span class="item-price">10</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="موس الشوكولاتة الداكنة" data-name-en="Dark Chocolate Mousse"
+             data-price="9"
+             data-desc-ar="موس شوكولاتة داكنة حريري بلمسة من زيت الزيتون والملح البحري، يقدّم مع رقائق شوكولاتة فاخرة."
+             data-desc-en="Silky dark chocolate mousse with a touch of olive oil and sea salt, served with premium chocolate shards.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?w=400&h=400&fit=crop" alt="موس الشوكولاتة الداكنة" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_17">موس الشوكولاتة الداكنة</span>
+            <span class="item-price">9</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="بودينغ بذور الشيا بجوز الهند" data-name-en="Coconut Chia Pudding"
+             data-price="7.5"
+             data-desc-ar="بودينغ بذور الشيا بحليب جوز الهند الكريمي، مع المانجو واللوز المحمص وشراب القيقب."
+             data-desc-en="Chia seed pudding with creamy coconut milk, mango, toasted almonds and maple syrup.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=400&h=400&fit=crop" alt="بودينغ بذور الشيا بجوز الهند" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_18">بودينغ بذور الشيا بجوز الهند</span>
+            <span class="item-price">7.5</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="جيلاتو الفستق" data-name-en="Pistachio Gelato"
+             data-price="8"
+             data-desc-ar="جيلاتو إيطالي بالفستق الحلبي الفاخر، مع رقائق الشوكولاتة الداكنة والڤانيليا الطبيعية."
+             data-desc-en="Italian gelato made with premium Aleppo pistachios, dark chocolate shards and natural vanilla.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?w=400&h=400&fit=crop" alt="جيلاتو الفستق" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_19">جيلاتو الفستق</span>
+            <span class="item-price">8</span>
+          </div>
+        </div>
+
+        <div class="item" tabindex="0"
+             data-name-ar="فتات الفواكه الموسمية" data-name-en="Seasonal Fruit Crumble"
+             data-price="9.5"
+             data-desc-ar="فتات الفواكه الموسمية الطازجة مع طبقة الشوفان المقرمشة، تُقدّم دافئة مع كريمة الكاجو الناعمة."
+             data-desc-en="Fresh seasonal fruit crumble with a crunchy oat topping, served warm with silky cashew cream.">
+          <div class="item-thumb"><img src="https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=400&h=400&fit=crop" alt="فتات الفواكه الموسمية" loading="lazy"></div>
+          <div class="item-details">
+            <span class="item-name" data-i18n="dish_20">فتات الفواكه الموسمية</span>
+            <span class="item-price">9.5</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="footer" data-i18n="footer">
+      20 طبقاً · مطبخ <span>العنبر والأخضر</span> · اضغط على أي طبق لعرض تفاصيله
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose" aria-label="إغلاق">×</button>
+      <div class="modal-hero">
+        <img id="modalHeroImg" src="" alt="" loading="eager">
+      </div>
+      <div class="modal-body">
+        <div class="modal-title">
+          <h3 id="modalTitle">اسم الطبق</h3>
+          <span class="modal-price" id="modalPrice">0 ر.س</span>
+        </div>
+        <p class="modal-desc" id="modalDesc">وصف الطبق</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const translations = {
+      ar: {
+        brand: "فيردنت",
+        nav_grilled: "مشويات",
+        nav_fried: "مقليات",
+        nav_drinks: "مشروبات",
+        nav_desserts: "حلويات",
+        lang_label: "EN",
+        menu_title: "قائمة الطعام",
+        menu_sub: 'عشرون طبقاً · <span>اضغط على أي طبق</span> لعرض تفاصيله',
+        cat_grilled: "مشويات",
+        cat_fried: "مقليات",
+        cat_drinks: "مشروبات",
+        cat_desserts: "حلويات",
+        footer: '20 طبقاً · مطبخ <span>العنبر والأخضر</span> · اضغط على أي طبق لعرض تفاصيله',
+        currency: "ر.س",
+        dish_1: "دجاج مشوي بالأعشاب",
+        dish_2: "ستيك ريب آي",
+        dish_3: "سلمون مشوي",
+        dish_4: "أسياخ خضار",
+        dish_5: "ريش غنم مشوية",
+        dish_6: "كاليماري مقرمش",
+        dish_7: "دجاج باللبن الرائب",
+        dish_8: "بطاطا حلوة مقلية",
+        dish_9: "فاصولياء تمبورا",
+        dish_10: "موز مقلي",
+        dish_11: "مشروب الخيار والنعناع",
+        dish_12: "ماتشا لاتيه مثلج",
+        dish_13: "ليموناضة بالحبق",
+        dish_14: "كولد برو تونيك",
+        dish_15: "صودا الزنجبيل والكركم",
+        dish_16: "تشيز كيك الماتشا",
+        dish_17: "موس الشوكولاتة الداكنة",
+        dish_18: "بودينغ بذور الشيا بجوز الهند",
+        dish_19: "جيلاتو الفستق",
+        dish_20: "فتات الفواكه الموسمية"
+      },
+      en: {
+        brand: "Verdant",
+        nav_grilled: "Grilled",
+        nav_fried: "Fried",
+        nav_drinks: "Drinks",
+        nav_desserts: "Desserts",
+        lang_label: "AR",
+        menu_title: "Menu",
+        menu_sub: 'Twenty items · <span>tap any dish</span> to see details',
+        cat_grilled: "Grilled",
+        cat_fried: "Fried",
+        cat_drinks: "Drinks",
+        cat_desserts: "Desserts",
+        footer: '20 items · <span>amber & green</span> kitchen · tap any dish for details',
+        currency: "SAR",
+        dish_1: "Herb Grilled Chicken",
+        dish_2: "Ribeye Steak",
+        dish_3: "Grilled Salmon",
+        dish_4: "Veggie Skewers",
+        dish_5: "Grilled Lamb Chops",
+        dish_6: "Crispy Calamari",
+        dish_7: "Buttermilk Fried Chicken",
+        dish_8: "Sweet Potato Fries",
+        dish_9: "Tempura Green Beans",
+        dish_10: "Fried Plantains",
+        dish_11: "Cucumber Mint Cooler",
+        dish_12: "Iced Matcha Latte",
+        dish_13: "Basil Lemonade",
+        dish_14: "Cold Brew Tonic",
+        dish_15: "Ginger Turmeric Soda",
+        dish_16: "Matcha Cheesecake",
+        dish_17: "Dark Chocolate Mousse",
+        dish_18: "Coconut Chia Pudding",
+        dish_19: "Pistachio Gelato",
+        dish_20: "Seasonal Fruit Crumble"
+      }
+    };
+
+    let currentLang = 'ar';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.body.classList.toggle('lang-en', lang === 'en');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+
+      document.querySelectorAll('.item').forEach(item => {
+        const idx = item.querySelector('[data-i18n^="dish_"]')?.dataset.i18n;
+        if (idx && t[idx]) item.querySelector('.item-name').textContent = t[idx];
+      });
+
+      document.title = lang === 'ar'
+        ? 'فيردنت · قائمة مطعم أنيقة'
+        : 'Verdant · Elegant Menu';
+
+      try { localStorage.setItem('verdant_lang', lang); } catch(e) {}
+    }
+
+    document.getElementById('langToggle').addEventListener('click', () => {
+      setLanguage(currentLang === 'ar' ? 'en' : 'ar');
+    });
+
+    (function initLang() {
+      let saved = 'ar';
+      try { saved = localStorage.getItem('verdant_lang') || 'ar'; } catch(e) {}
+      setLanguage(saved);
+    })();
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const navHeight = document.querySelector('.navbar').offsetHeight;
+          const pos = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 10;
+          window.scrollTo({ top: pos, behavior: 'smooth' });
+        }
+      });
+    });
+
+    const categories = document.querySelectorAll('.category');
+    const revealObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    categories.forEach(c => revealObserver.observe(c));
+
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(link => {
+            const active = link.getAttribute('href') === `#${id}`;
+            link.style.color = active ? '#e8c47a' : '';
+            link.style.borderBottomColor = active ? '#d9a441' : '';
+          });
+        }
+      });
+    }, { threshold: 0.4, rootMargin: '-80px 0px -50% 0px' });
+    categories.forEach(s => navObserver.observe(s));
+
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const modalHeroImg = document.getElementById('modalHeroImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalDesc = document.getElementById('modalDesc');
+
+    function openModal(item) {
+      const lang = currentLang;
+      const name = item.dataset['name' + (lang === 'ar' ? 'Ar' : 'En')] || item.dataset.nameAr;
+      const desc = item.dataset['desc' + (lang === 'ar' ? 'Ar' : 'En')] || item.dataset.descAr;
+      const price = item.dataset.price;
+      const currency = translations[lang].currency;
+      const thumbImg = item.querySelector('.item-thumb img');
+
+      modalHeroImg.classList.remove('loaded');
+      modalHeroImg.removeAttribute('src');
+
+      if (thumbImg && thumbImg.src) {
+        const preloader = new Image();
+        preloader.onload = () => {
+          modalHeroImg.src = thumbImg.src;
+          modalHeroImg.alt = name;
+          modalHeroImg.classList.add('loaded');
+        };
+        preloader.onerror = () => {
+          modalHeroImg.src = thumbImg.src;
+          modalHeroImg.alt = name;
+          modalHeroImg.classList.add('loaded');
+        };
+        preloader.src = thumbImg.src;
+      }
+
+      modalTitle.textContent = name;
+      modalPrice.textContent = lang === 'ar' ? `${price} ${currency}` : `${currency} ${price}`;
+      modalDesc.textContent = desc;
+
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      modalClose.focus();
+    }
+
+    function closeModal() {
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('click', () => openModal(item));
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(item);
+        }
+      });
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+    });
+
+    console.log(`🍃 Themed bilingual menu — ${document.querySelectorAll('.item').length} items`);
+  </script>
+</body>
+</html>
